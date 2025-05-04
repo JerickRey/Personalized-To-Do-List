@@ -6,117 +6,140 @@
   <title>Login & Sign Up</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <style>
-    body, html {
-      height: 100vh;
-      margin: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: linear-gradient(135deg, #f8fafc 0%, #ffe0e9 100%);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    .auth-card {
-      background: #fff;
-      border-radius: 1.5rem;
-      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
-      width: 400px;
-      overflow: hidden;
+    body, html { height: 100%; margin: 0; overflow: hidden; }
+    .container-fluid { height: 100vh; display: flex; flex-wrap: nowrap; }
+    .left-image {
+      width: 50%;
+      background: url('images/coverphoto.png') no-repeat center center/cover;
       position: relative;
+      filter: brightness(0.85);
     }
-    .forms-wrapper {
+    .left-image::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.3);
+    }
+    .right-form-container {
+      width: 50%;
+      position: relative;
+      overflow: hidden;
+      background: #f8f9fa;
       display: flex;
+      flex-direction: column;
+    }
+    nav.navbar {
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 0.5rem 2rem;
+      z-index: 10;
+    }
+    nav.navbar img { height: 40px; }
+    .forms-wrapper {
+      flex: 1;
+      position: relative;
       width: 200%;
-      transition: transform 0.5s ease;
+      display: flex;
+      transition: transform 0.5s cubic-bezier(.77,0,.18,1);
     }
     .form-panel {
       width: 50%;
-      padding: 2rem 3rem;
-      box-sizing: border-box;
+      padding: 3rem 2rem;
+      overflow-y: auto;
     }
-    .form-title {
-      font-weight: 700;
-      color: #ee0979;
-      margin-bottom: 1.5rem;
-      text-align: center;
-      letter-spacing: 1px;
-    }
-    .btn-primary {
-      background: #3b82f6;
-      border: none;
-      font-weight: 600;
-      width: 100%;
-      padding: 0.5rem;
-      transition: background 0.3s ease;
-    }
-    .btn-primary:hover {
-      background: #2563eb;
-    }
-    .toggle-link {
-      color: #3b82f6;
-      cursor: pointer;
-      text-decoration: underline;
-      display: block;
-      text-align: center;
-      margin-top: 1rem;
-    }
-    .alert {
-      margin-top: 1rem;
-    }
-    @media (max-width: 450px) {
-      .auth-card {
-        width: 90vw;
-      }
-      .form-panel {
-        padding: 1rem 1.5rem;
-      }
+    .form-panel h2 { margin-bottom: 1.5rem; font-weight: 700; color: #222; }
+    .form-control:focus { box-shadow: none; border-color: #3B82F6; }
+    .btn-primary { background: #3B82F6; border: none; transition: background 0.3s; }
+    .btn-primary:hover { background: #2563EB; }
+    .alert { margin-top: 1rem; }
+    .toggle-link { color: #3B82F6; cursor: pointer; text-decoration: underline; }
+    @media (max-width: 768px) {
+      .container-fluid { flex-direction: column; }
+      .left-image, .right-form-container { width: 100%; height: 40vh; }
+      .forms-wrapper { width: 100%; flex-direction: column; transform: none !important; }
+      .form-panel { width: 100%; padding: 1.5rem; }
     }
   </style>
 </head>
 <body>
-  <div class="auth-card">
-    <div class="forms-wrapper" id="formsWrapper">
-      <!-- Login Form -->
-      <div class="form-panel" id="loginPanel">
-        <div class="form-title">Login</div>
-        <form id="loginForm" autocomplete="off">
-          <div class="mb-3">
-            <label for="loginEmail" class="form-label">Email</label>
-            <input type="email" class="form-control" id="loginEmail" required />
-          </div>
-          <div class="mb-3">
-            <label for="loginPassword" class="form-label">Password</label>
-            <input type="password" class="form-control" id="loginPassword" required />
-          </div>
-          <button type="submit" class="btn btn-primary">Login</button>
-        </form>
-        <span class="toggle-link" id="showSignup">Don't have an account? Sign Up</span>
-        <div id="loginAlert"></div>
-      </div>
-      <!-- Sign Up Form -->
-      <div class="form-panel" id="signupPanel">
-        <div class="form-title">Sign Up</div>
-        <form id="signupForm" autocomplete="off">
-          <div class="mb-3">
-            <label for="signupEmail" class="form-label">Email</label>
-            <input type="email" class="form-control" id="signupEmail" required />
-          </div>
-          <div class="mb-3">
-            <label for="signupPassword" class="form-label">Password</label>
-            <input type="password" class="form-control" id="signupPassword" required />
-          </div>
-          <div class="mb-3">
-            <label for="signupConfirmPassword" class="form-label">Confirm Password</label>
-            <input type="password" class="form-control" id="signupConfirmPassword" required />
-          </div>
-          <button type="submit" class="btn btn-primary">Sign Up</button>
-        </form>
-        <span class="toggle-link" id="showLogin">Already have an account? Login</span>
-        <div id="signupAlert"></div>
+  <div class="container-fluid">
+    <div class="left-image"></div>
+    <div class="right-form-container">
+      <nav class="navbar">
+        <img src="images/logo.png" alt="Logo" />
+      </nav>
+      <div class="forms-wrapper" id="formsWrapper">
+        <!-- Login Form -->
+        <div class="form-panel" id="loginPanel">
+          <h2>Login</h2>
+          <form id="loginForm" autocomplete="off">
+            <div class="mb-3">
+              <label for="loginEmail" class="form-label">Email</label>
+              <input type="email" class="form-control" id="loginEmail" required />
+            </div>
+            <div class="mb-3">
+              <label for="loginPassword" class="form-label">Password</label>
+              <input type="password" class="form-control" id="loginPassword" required />
+            </div>
+            <div class="mb-3 form-check">
+              <input type="checkbox" class="form-check-input" id="rememberMe" />
+              <label class="form-check-label" for="rememberMe">Remember me</label>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+          </form>
+          <p class="mt-3 text-center">
+            Don't have an account? <span class="toggle-link" id="showSignup">Sign Up</span>
+          </p>
+          <div id="loginAlert"></div>
+        </div>
+        <!-- Sign Up Form -->
+        <div class="form-panel" id="signupPanel">
+          <h2>Sign Up</h2>
+          <form id="signupForm" autocomplete="off">
+            <div class="mb-3">
+              <label for="signupEmail" class="form-label">Email</label>
+              <input type="email" class="form-control" id="signupEmail" required />
+            </div>
+            <div class="mb-3">
+              <label for="signupPassword" class="form-label">Password</label>
+              <input type="password" class="form-control" id="signupPassword" required />
+            </div>
+            <div class="mb-3">
+              <label for="signupConfirmPassword" class="form-label">Confirm Password</label>
+              <input type="password" class="form-control" id="signupConfirmPassword" required />
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Sign Up</button>
+          </form>
+          <p class="mt-3 text-center">
+            Already have an account? <span class="toggle-link" id="showLogin">Login</span>
+          </p>
+          <div id="signupAlert"></div>
+        </div>
       </div>
     </div>
   </div>
 
   <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import {
+      getAuth,
+      signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCM25ktxZOzCrRu1y9ybfJOsfGx0FLyTQg",
+      authDomain: "to-do-list-app-17069.firebaseapp.com",
+      projectId: "to-do-list-app-17069",
+      storageBucket: "to-do-list-app-17069.appspot.com",
+      messagingSenderId: "106076608276",
+      appId: "1:106076608276:web:5a2780f4f80cd355a95401"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
     const formsWrapper = document.getElementById('formsWrapper');
     const loginPanel = document.getElementById('loginPanel');
     const signupPanel = document.getElementById('signupPanel');
@@ -142,15 +165,39 @@
       signupAlert.innerHTML = '';
     }
 
-    // You can add your Firebase auth logic here
-    loginForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      // Handle login
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        window.location.href = 'index.html';
+      }
     });
 
-    signupForm.addEventListener('submit', (e) => {
+    loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      // Handle signup
+      loginAlert.innerHTML = '';
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+      } catch (error) {
+        loginAlert.innerHTML = `<div class="alert alert-danger">${error.message}</div>`;
+      }
+    });
+
+    signupForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      signupAlert.innerHTML = '';
+      const email = document.getElementById('signupEmail').value.trim();
+      const password = document.getElementById('signupPassword').value;
+      const confirmPassword = document.getElementById('signupConfirmPassword').value;
+      if (password !== confirmPassword) {
+        signupAlert.innerHTML = `<div class="alert alert-danger">Passwords do not match.</div>`;
+        return;
+      }
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+      } catch (error) {
+        signupAlert.innerHTML = `<div class="alert alert-danger">${error.message}</div>`;
+      }
     });
   </script>
 </body>
