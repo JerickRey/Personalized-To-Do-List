@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Personalized To-Do List</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    body, html { height: 100%; margin: 0; background: #f3f4f8; }
+    .navbar {
+      background: linear-gradient(90deg, #ff6a00 0%, #ee0979 100%);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .navbar-brand {
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #fff !important;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+    .navbar-brand img {
+      height: 40px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    }
+    .app-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+    .sidebar {
+      width: 280px;
+      background: linear-gradient(135deg, #fff1eb 0%, #ace0f9 100%);
+      border-right: 1px solid #e0e0e0;
+      padding: 2rem 1.5rem;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    .profile-info {
+      background: #fff;
+      border-radius: 1rem;
+      box-shadow: 0 4px 24px rgba(59, 130, 246, 0.08);
+      padding: 2rem 1rem;
+      width: 100%;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .profile-info h3 {
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+      color: #ee0979;
+    }
+    .profile-info p {
+      color: #555;
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .main-content {
+      flex: 1;
+      padding: 2.5rem 2rem;
+      background: linear-gradient(120deg, #f3f4f8 60%, #ffe0e9 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .card-todo {
+      background: #fff;
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10);
+      padding: 2rem 2rem 1.5rem 2rem;
+      width: 100%;
+      max-width: 600px;
+      margin-bottom: 2rem;
+    }
+    .task-form .form-group { margin-bottom: 1rem; }
+    .task-list .list-group-item {
+      border-radius: 0.7rem;
+      margin-bottom: 0.7rem;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.04);
+      background: #f9f9fb;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .task-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .material-icons {
+      vertical-align: middle;
+      font-size: 1.3rem;
+    }
+    .btn-icon {
+      background: none;
+      border: none;
+      color: #3B82F6;
+      padding: 0.2rem 0.5rem;
+      border-radius: 0.5rem;
+      transition: background 0.2s;
+    }
+    .btn-icon:hover {
+      background: #e0e7ff;
+      color: #ee0979;
+    }
+    .history-collapse {
+      margin-top: 1rem;
+    }
+    @media (max-width: 991.98px) {
+      .app-layout { flex-direction: column; }
+      .sidebar, .main-content { width: 100%; }
+      .main-content { padding: 1rem; }
+      .card-todo { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <span class="navbar-brand">
+        <img src="images/logo.png" alt="Logo" />
+        Creative To-Do List
+      </span>
+    </div>
+  </nav>
+  <div class="app-layout">
+    <div class="sidebar">
+      <div class="profile-info">
+        <h3 id="userName">User Name</h3>
+        <p id="userEmail">user@example.com</p>
+        <button id="logoutBtn" class="btn btn-outline-danger btn-sm">Logout</button>
+      </div>
+    </div>
+    <div class="main-content">
+      <div class="card-todo">
+        <form id="taskForm" class="task-form">
+          <div class="form-group">
+            <input type="text" id="subjectInput" class="form-control" placeholder="Subject" required />
+          </div>
+          <div class="form-group">
+            <textarea id="moreInfoInput" class="form-control" placeholder="More Info"></textarea>
+          </div>
+          <div class="form-group">
+            <input type="date" id="dueDateInput" class="form-control" required />
+          </div>
+          <button type="submit" class="btn btn-primary w-100">Add Task</button>
+        </form>
+      </div>
+      <div class="mb-4 w-100" style="max-width:600px;">
+        <canvas id="tasksChart" height="120"></canvas>
+      </div>
+      <button class="btn btn-outline-primary mb-3" id="fetchTasksBtn">
+        <span class="material-icons">refresh</span> Fetch Tasks
+      </button>
+      <div class="card-todo">
+        <h4>Current Tasks</h4>
+        <ul class="list-group task-list" id="currentTaskList"></ul>
+        <div class="history-collapse">
+          <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#historyCollapse" aria-expanded="false" aria-controls="historyCollapse">
+            <span class="material-icons">history</span> Show/Hide History
+          </button>
+          <div class="collapse" id="historyCollapse">
+            <h4>History</h4>
+            <ul class="list-group task-list" id="historyTaskList"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      query,
+      where,
+      orderBy,
+      getDocs,
+      updateDoc,
+      doc,
+      deleteDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCM25ktxZOzCrRu1y9ybfJOsfGx0FLyTQg",
+      authDomain: "to-do-list-app-17069.firebaseapp.com",
+      projectId: "to-do-list-app-17069",
+      storageBucket: "to-do-list-app-17069.appspot.com",
+      messagingSenderId: "106076608276",
+      appId: "1:106076608276:web:5a2780f4f80cd355a95401"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    const userNameEl = document.getElementById('userName');
+    const userEmailEl = document.getElementById('userEmail');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const taskForm = document.getElementById('taskForm');
+    const subjectInput = document.getElementById('subjectInput');
+    const moreInfoInput = document.getElementById('moreInfoInput');
+    const dueDateInput = document.getElementById('dueDateInput');
+    const currentTaskList = document.getElementById('currentTaskList');
+    const historyTaskList = document.getElementById('historyTaskList');
+    const tasksChartCtx = document.getElementById('tasksChart').getContext('2d');
+    const fetchTasksBtn = document.getElementById('fetchTasksBtn');
+
+    let currentUser = null;
+    let fetchInterval = null;
+    let tasksChart = null;
+
+    onAuthStateChanged(auth, user => {
+      if (!user) {
+        window.location.href = 'login.html';
+      } else {
+        currentUser = user;
+        userNameEl.textContent = user.displayName || user.email.split('@')[0];
+        userEmailEl.textContent = user.email;
+        fetchAndDisplayTasks();
+        if (fetchInterval) clearInterval(fetchInterval);
+        fetchInterval = setInterval(fetchAndDisplayTasks, 60000);
+      }
+    });
+
+    logoutBtn.addEventListener('click', async () => {
+      await signOut(auth);
+    });
+
+    taskForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!currentUser) return;
+      const subject = subjectInput.value.trim();
+      const moreInfo = moreInfoInput.value.trim();
+      const dueDate = dueDateInput.value;
+      if (!subject || !dueDate) return;
+
+      await addDoc(collection(db, 'tasks'), {
+        userId: currentUser.uid,
+        subject,
+        moreInfo,
+        dueDate,
+        completed: false,
+        createdAt: serverTimestamp()
+      });
+
+      subjectInput.value = '';
+      moreInfoInput.value = '';
+      dueDateInput.value = '';
+      fetchAndDisplayTasks();
+    });
+
+    fetchTasksBtn.addEventListener('click', fetchAndDisplayTasks);
+
+    async function fetchAndDisplayTasks() {
+      if (!currentUser) return;
+      const q = query(
+        collection(db, 'tasks'),
+        where('userId', '==', currentUser.uid),
+        orderBy('createdAt', 'desc')
+      );
+      const snapshot = await getDocs(q);
+      currentTaskList.innerHTML = '';
+      historyTaskList.innerHTML = '';
+      const monthlyCounts = {};
+
+      snapshot.forEach(docSnap => {
+        const task = docSnap.data();
+        const li = document.createElement('li');
+        li.className = 'list-group-item';
+        li.innerHTML = `
+          <div><strong>${task.subject}</strong> - Due: ${task.dueDate}</div>
+          <div>${task.moreInfo || ''}</div>
+          <div>Status: ${task.completed ? 'Completed' : 'Pending'}</div>
+          <div>Created: ${task.createdAt && task.createdAt.toDate ? task.createdAt.toDate().toLocaleString() : ''}</div>
+          <div class="task-actions">
+            ${!task.completed ? `
+              <button class="btn-icon complete-btn" data-id="${docSnap.id}" title="Complete">
+                <span class="material-icons">check_circle</span>
+              </button>
+              <button class="btn-icon delete-btn" data-id="${docSnap.id}" title="Delete">
+                <span class="material-icons">delete</span>
+              </button>
+            ` : `
+              <button class="btn-icon delete-btn" data-id="${docSnap.id}" title="Delete">
+                <span class="material-icons">delete</span>
+              </button>
+            `}
+          </div>
+        `;
+
+        // Count tasks per month for chart
+        if (task.createdAt && task.createdAt.toDate) {
+          const date = task.createdAt.toDate();
+          const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
+          monthlyCounts[monthKey] = (monthlyCounts[monthKey] || 0) + 1;
+        }
+
+        if (task.completed) {
+          historyTaskList.appendChild(li);
+        } else {
+          currentTaskList.appendChild(li);
+        }
+      });
+
+      // Complete and delete button handlers
+      document.querySelectorAll('.complete-btn').forEach(btn => {
+        btn.onclick = async () => {
+          const id = btn.getAttribute('data-id');
+          const taskRef = doc(db, 'tasks', id);
+          await updateDoc(taskRef, { completed: true });
+          fetchAndDisplayTasks();
+        };
+      });
+
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.onclick = async () => {
+          const id = btn.getAttribute('data-id');
+          const taskRef = doc(db, 'tasks', id);
+          await deleteDoc(taskRef);
+          fetchAndDisplayTasks();
+        };
+      });
+
+      updateChart(monthlyCounts);
+    }
+
+    function updateChart(monthlyCounts) {
+      const labels = Object.keys(monthlyCounts).sort();
+      const data = labels.map(label => monthlyCounts[label]);
+
+      if (tasksChart) {
+        tasksChart.data.labels = labels;
+        tasksChart.data.datasets[0].data = data;
+        tasksChart.update();
+      } else {
+        tasksChart = new Chart(tasksChartCtx, {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [{
+              label: 'Tasks Created per Month',
+              data,
+              backgroundColor: 'rgba(59, 130, 246, 0.7)'
+            }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: { beginAtZero: true }
+            }
+          }
+        });
+      }
+    }
+  </script>
+</body>
+</html>

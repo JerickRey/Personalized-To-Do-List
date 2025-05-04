@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login & Sign Up</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body, html {
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #f8fafc 0%, #ffe0e9 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .auth-card {
+      background: #fff;
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+      width: 400px;
+      overflow: hidden;
+      position: relative;
+    }
+    .forms-wrapper {
+      display: flex;
+      width: 200%;
+      transition: transform 0.5s ease;
+    }
+    .form-panel {
+      width: 50%;
+      padding: 2rem 3rem;
+      box-sizing: border-box;
+    }
+    .form-title {
+      font-weight: 700;
+      color: #ee0979;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+    .btn-primary {
+      background: #3b82f6;
+      border: none;
+      font-weight: 600;
+      width: 100%;
+      padding: 0.5rem;
+      transition: background 0.3s ease;
+    }
+    .btn-primary:hover {
+      background: #2563eb;
+    }
+    .toggle-link {
+      color: #3b82f6;
+      cursor: pointer;
+      text-decoration: underline;
+      display: block;
+      text-align: center;
+      margin-top: 1rem;
+    }
+    .alert {
+      margin-top: 1rem;
+    }
+    @media (max-width: 450px) {
+      .auth-card {
+        width: 90vw;
+      }
+      .form-panel {
+        padding: 1rem 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-card">
+    <div class="forms-wrapper" id="formsWrapper">
+      <!-- Login Form -->
+      <div class="form-panel" id="loginPanel">
+        <div class="form-title">Login</div>
+        <form id="loginForm" autocomplete="off">
+          <div class="mb-3">
+            <label for="loginEmail" class="form-label">Email</label>
+            <input type="email" class="form-control" id="loginEmail" required />
+          </div>
+          <div class="mb-3">
+            <label for="loginPassword" class="form-label">Password</label>
+            <input type="password" class="form-control" id="loginPassword" required />
+          </div>
+          <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+        <span class="toggle-link" id="showSignup">Don't have an account? Sign Up</span>
+        <div id="loginAlert"></div>
+      </div>
+      <!-- Sign Up Form -->
+      <div class="form-panel" id="signupPanel">
+        <div class="form-title">Sign Up</div>
+        <form id="signupForm" autocomplete="off">
+          <div class="mb-3">
+            <label for="signupEmail" class="form-label">Email</label>
+            <input type="email" class="form-control" id="signupEmail" required />
+          </div>
+          <div class="mb-3">
+            <label for="signupPassword" class="form-label">Password</label>
+            <input type="password" class="form-control" id="signupPassword" required />
+          </div>
+          <div class="mb-3">
+            <label for="signupConfirmPassword" class="form-label">Confirm Password</label>
+            <input type="password" class="form-control" id="signupConfirmPassword" required />
+          </div>
+          <button type="submit" class="btn btn-primary">Sign Up</button>
+        </form>
+        <span class="toggle-link" id="showLogin">Already have an account? Login</span>
+        <div id="signupAlert"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    const formsWrapper = document.getElementById('formsWrapper');
+    const loginPanel = document.getElementById('loginPanel');
+    const signupPanel = document.getElementById('signupPanel');
+    const showSignup = document.getElementById('showSignup');
+    const showLogin = document.getElementById('showLogin');
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+    const loginAlert = document.getElementById('loginAlert');
+    const signupAlert = document.getElementById('signupAlert');
+
+    showSignup.addEventListener('click', () => {
+      formsWrapper.style.transform = 'translateX(-50%)';
+      clearAlerts();
+    });
+
+    showLogin.addEventListener('click', () => {
+      formsWrapper.style.transform = 'translateX(0)';
+      clearAlerts();
+    });
+
+    function clearAlerts() {
+      loginAlert.innerHTML = '';
+      signupAlert.innerHTML = '';
+    }
+
+    // You can add your Firebase auth logic here
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      // Handle login
+    });
+
+    signupForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      // Handle signup
+    });
+  </script>
+</body>
+</html>
